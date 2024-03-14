@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'AWS Lambda function with API Gateway'
+
+Resources:
+  CldFaceRekognition:
+    Type: 'AWS::Serverless::Function'    
+    Properties:
+      Handler: main.lambda_handler
+      Timeout: 300 # for debug, let's keep a crazy long timeout
+      Runtime: python3.10
+      CodeUri: lambda/
+      Events:
+        MyApi:
+          Type: Api
+          Properties:
+            Path: /rekognize
+            Method: post
+      Policies:
+          - AmazonRekognitionFullAccess
+          - Statement:
+              - Sid: SecretsManagerGetSecretValue
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - arn:aws:secretsmanager:us-east-1:365643640437:secret:prod/akshay/*
