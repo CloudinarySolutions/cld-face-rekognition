@@ -54,9 +54,3 @@ AWS indexes the faces by creating a face collection. Here are some quick command
 As you are testing, you want to reset your collection. Here's how to delete it.
 
     aws rekognition delete-collection --collection-id <collection-name>
-
- ## Integration in Action
-
- Here's how training for new faces will work.
-
-<video width="630" height="300" src="https://akshayranganath-res.cloudinary.com/video/upload/sp_custom_profile_4_5/blog/rekognition/train-for-new-faces.m3u8">    
