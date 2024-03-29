@@ -6,7 +6,7 @@ from params import Params
 from awsutil import get_secret
 
 def initialize_cloudinary(credentials:dict):
-    print(type(credentials), credentials)
+    #print(type(credentials), credentials)
     cloudinary.config(
         cloud_name = credentials['cloud_name'],
         api_key = credentials['api_key'],
@@ -21,20 +21,19 @@ def add_metadata_to_image(public_id:str, model_names:list[str])->bool:
     # first check if the model name exists in metadata
     # find metadata field name
     result = False    
-    try:
-        external_id = Params.mtd_external_id
-        add_model_to_metadata(external_id=external_id, model_names=model_names) 
-        mtd_string = f'{external_id}={model_names[0]}' # stringify_metadata(external_id=external_id,values=model_names )
-        print(f"Applying: {mtd_string} to {public_id}")
-        resp = cloudinary.uploader.update_metadata(
-            mtd_string, #{[sanitize_name(x) for x in model_names]}',
-            [public_id]
-        )
-        print("Done")
-        result = True
-    except Exception as e:
-        print(f'Unable to update metadata for {public_id}: {e}')
-    return True
+    
+    external_id = Params.mtd_external_id
+    add_model_to_metadata(external_id=external_id, model_names=model_names) 
+    mtd_string = f'{external_id}={model_names[0]}' # stringify_metadata(external_id=external_id,values=model_names )
+    print(f"Applying: {mtd_string} to {public_id}")
+    resp = cloudinary.uploader.update_metadata(
+        mtd_string, #{[sanitize_name(x) for x in model_names]}',
+        [public_id]
+    )
+    print("Done")
+    result = True
+
+    return result
     
 
 def sanitize_name(name:str)->str:
@@ -53,8 +52,9 @@ def add_model_to_metadata(external_id:str, model_names:list[str])->bool:
     # get the existing model names
     fields = cloudinary.api.metadata_field_by_field_id(external_id)
     existing_model_names = set()
-    if fields.get('datasource') and fields['datasource'].get('values'):
+    if fields.get('datasource') and fields['datasource'].get('values'):        
         for field in fields['datasource']['values']:
+            print(field)        
             existing_model_names.add(field['value'])
     
     
@@ -64,14 +64,14 @@ def add_model_to_metadata(external_id:str, model_names:list[str])->bool:
         
         if model_name not in existing_model_names:
             # this is a new model. add it to the metadata set
-            resp = cloudinary.api.update_metadata_field_datasource(
-                external_id,
-                [{
-                    'external_id': name_id,
-                    'value': model_name
-                }]
-            )
-            print(f'{model_name} not found. Added name successfully\n{resp}')
+            #resp = cloudinary.api.update_metadata_field_datasource(
+            #    external_id,
+            #    [{
+            #        'external_id': name_id,
+            #        'value': model_name
+            #    }]
+            #)
+            #print(f'{model_name} not found. Added name successfully\n{resp}')
             #added - so let's say we're done
             result = True
         else:

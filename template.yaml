@@ -15,7 +15,7 @@ Resources:
           Type: Api
           Properties:
             Path: /rekognize
-            Method: post
+            Method: ANY        
       Policies:
           - AmazonRekognitionFullAccess
           - Statement:
